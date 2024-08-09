@@ -5,28 +5,28 @@ import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { IPostDetail } from "@/types/posts.type";
 import useSWR from "swr";
+import axiosClient from "@/services/axios-client";
 
 interface IPostDetailProps {
   postId: string;
 }
 
 const MILLISECOND_PER_HOUR = 60 * 60 * 1000;
+const fetcher = (url: string) => axiosClient.get(url).then((res) => res.data);
 
 export default function PostDetail({ postId }: IPostDetailProps) {
   const { data, isLoading, error, mutate } = useSWR<IPostDetail>(
     `/posts/${postId}`,
-    () => postApi.getPostById(postId).then((res) => res.data),
+    fetcher,
     {
-      revalidateOnFocus: false,
-      // dedupingInterval: MILLISECOND_PER_HOUR,
+      revalidateOnFocus: true,
+      // dedupingInterval: 1000,
     }
   );
 
   const handleMutateClick = () => {
-    mutate({ ...data, title: "SonPM" } as IPostDetail, true);
+    mutate({ ...data, title: "SonPM" } as IPostDetail, false);
   };
-
-  console.log("data", data);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error</div>;
