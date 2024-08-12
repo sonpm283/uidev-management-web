@@ -1,3 +1,5 @@
+import { HttpStatusCode } from "axios";
+
 export {};
 // https://bobbyhadz.com/blog/typescript-make-types-global#declare-global-types-in-typescript
 
@@ -15,7 +17,7 @@ declare global {
   interface IBackendRes<T> {
     error?: string | string[];
     message: string;
-    statusCode: number | string;
+    statusCode: HttpStatusCode;
     data?: T;
   }
 

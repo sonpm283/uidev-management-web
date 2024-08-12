@@ -17,10 +17,15 @@ import { LoginBody, LoginBodyType } from "@/schemaValidations/auth.schema";
 import { useToast } from "@/components/ui/use-toast";
 import { useEffect, useState } from "react";
 import envConfig from "@/config/env.config";
+import { useAppContext } from "@/app/AppProvider";
+import { useRouter } from 'next/navigation'
 
 export default function LoginForm() {
   const [error, setError] = useState<string>("");
   const { toast } = useToast();
+  const { setSessionToken } = useAppContext();
+
+  const router = useRouter()
 
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
@@ -45,6 +50,7 @@ export default function LoginForm() {
         {
           method: "POST",
           body: JSON.stringify(formData),
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
@@ -63,9 +69,39 @@ export default function LoginForm() {
 
         return data;
       });
+
+      console.log('logged in');
+      
+      router.push('dashboard')
       toast({
         description: result.payload.message,
       });
+
+      // set Cookie for NextJS server in other cases domain
+      // const resultFromNextServer = await fetch("/api/auth", {
+      //   method: "POST",
+      //   body: JSON.stringify(result),
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      // }).then(async (res) => {
+      //   const payload = await res.json();
+
+      //   const data = {
+      //     status: res.status,
+      //     payload,
+      //   };
+
+      //   if (!res.ok) {
+      //     throw data;
+      //   }
+
+      //   return data;
+      // });
+
+      // setSessionToken(resultFromNextServer.payload.data.token);
+
+      // setSessionToken(result.payload.data.token);
     } catch (error: any) {
       const status = error.status as number;
 
