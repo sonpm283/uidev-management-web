@@ -1,7 +1,5 @@
 import React from 'react'
 
 export default function UserProfilePage() {
-  return (
-    <div className='h-screen'>UserProfilePage</div>
-  )
+  return <div className='h-screen'>UserProfilePage</div>
 }

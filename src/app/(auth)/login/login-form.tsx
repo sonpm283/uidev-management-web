@@ -1,81 +1,51 @@
-"use client";
+'use client'
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
 
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { LoginBody, LoginBodyType } from "@/schemaValidations/auth.schema";
-import { useToast } from "@/components/ui/use-toast";
-import { useEffect, useState } from "react";
-import envConfig from "@/config/env.config";
-import { useAppContext } from "@/app/AppProvider";
+import { Button } from '@/components/ui/button'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { LoginBody, LoginDataType } from '@/schemaValidations/auth.schema'
+import { useToast } from '@/components/ui/use-toast'
+import { useEffect, useState } from 'react'
+import { useAppContext } from '@/app/AppProvider'
 import { useRouter } from 'next/navigation'
+import authService from '@/services/auth-service'
 
 export default function LoginForm() {
-  const [error, setError] = useState<string>("");
-  const { toast } = useToast();
-  const { setSessionToken } = useAppContext();
+  const [error, setError] = useState<string>('')
+  const { toast } = useToast()
+  // const { setSessionToken } = useAppContext()
 
   const router = useRouter()
 
-  const form = useForm<LoginBodyType>({
+  const form = useForm<LoginDataType>({
     resolver: zodResolver(LoginBody),
     defaultValues: {
-      email: "",
-      password: "",
-    },
+      email: '',
+      password: ''
+    }
     // reValidateMode: "onSubmit",
-  });
+  })
 
   useEffect(() => {
     const subscription = form.watch(() => {
-      setError("");
-    });
-    return () => subscription.unsubscribe();
-  }, [form]);
+      setError('')
+    })
+    return () => subscription.unsubscribe()
+  }, [form])
 
-  async function onSubmit(formData: LoginBodyType) {
+  async function onSubmit(formData: LoginDataType) {
     try {
-      const result = await fetch(
-        `${envConfig.NEXT_PUBLIC_API_ENDPOINT}/auth/login`,
-        {
-          method: "POST",
-          body: JSON.stringify(formData),
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      ).then(async (res) => {
-        const payload = await res.json();
+      const result = await authService.login(formData)
 
-        const data = {
-          status: res.status,
-          payload,
-        };
-
-        if (!res.ok) {
-          throw data;
-        }
-
-        return data;
-      });
-
-      console.log('logged in');
-      
+      //navigate to dashboard
       router.push('dashboard')
+
       toast({
-        description: result.payload.message,
-      });
+        description: result.message
+      })
 
       // set Cookie for NextJS server in other cases domain
       // const resultFromNextServer = await fetch("/api/auth", {
@@ -103,29 +73,28 @@ export default function LoginForm() {
 
       // setSessionToken(result.payload.data.token);
     } catch (error: any) {
-      const status = error.status as number;
+      const status = error.status as number
 
-      if (status === 422) {
-        setError(error.payload.message);
+      if (status === 401) {
+        console.log(error)
+
+        setError(error.payload.message)
       } else {
         toast({
-          variant: "destructive",
-          title: "Lỗi",
-          description: error.payload.message,
-        });
+          variant: 'destructive',
+          title: 'Lỗi',
+          description: error.payload.message
+        })
       }
     }
   }
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-3 max-w-full w-full"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-3 max-w-full w-full'>
         <FormField
           control={form.control}
-          name="email"
+          name='email'
           render={({ field }) => (
             <FormItem>
               <FormLabel>Email</FormLabel>
@@ -139,12 +108,12 @@ export default function LoginForm() {
 
         <FormField
           control={form.control}
-          name="password"
+          name='password'
           render={({ field }) => (
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type="password" {...field} />
+                <Input type='password' {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -152,10 +121,10 @@ export default function LoginForm() {
         />
 
         {error && <FormMessage>{error}</FormMessage>}
-        <Button type="submit" className="w-full !mt-10">
+        <Button type='submit' className='w-full !mt-10'>
           Login
         </Button>
       </form>
     </Form>
-  );
+  )
 }

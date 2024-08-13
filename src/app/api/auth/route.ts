@@ -1,12 +1,11 @@
 export async function POST(request: Request) {
-  const res = await request.json();
+  const res = await request.json()
 
-  console.log('res', res);
-  
+  console.log('res', res)
 
-  const accessToken = res.payload?.data.token;
+  const accessToken = res.payload?.data.token
   if (!accessToken) {
-    return Response.json({ message: "Token does not exist" }, { status: 400 });
+    return Response.json({ message: 'Token does not exist' }, { status: 400 })
   }
 
   return Response.json(res.payload, {
@@ -14,6 +13,6 @@ export async function POST(request: Request) {
     headers: {
       // For NextJS server
       // "Set-Cookie": `sessionToken=${accessToken}; Path=/; HttpOnly`,
-    },
-  });
+    }
+  })
 }

@@ -1,29 +1,39 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-const privatePaths = ["/me", "/dashboard"];
-const authPaths = ["/login", "/register"];
-
-// This function can be marked `async` if using `await` inside
 export function middleware(request: NextRequest) {
-  const sessionToken = request.cookies.get("accessToken")?.value;
+  
+  
+  // Get current path
+  const { pathname: currentPath } = request.nextUrl
+  console.log('pathname::', currentPath);
 
-  const { pathname } = request.nextUrl;
+  // Get token from cookie or header
+  const token = request.cookies.get('accessToken')?.value || request.headers.get('Authorization')?.split(' ')[1]
 
-  // Is Not LoggedIn
-  if (privatePaths.some((path) => pathname.startsWith(path) && !sessionToken)) {
-    return NextResponse.redirect(new URL("/login", request.url));
+  // List of routes that require authentication
+  const authRoutes = ['/dashboard', '/me']
+
+  // Check if the current path requires authentication
+  const isAuthRoute = authRoutes.some((route) => currentPath.startsWith(route))
+
+  // If it's an auth route and there's no token
+  if (isAuthRoute && !token) {
+    // Redirect to login page
+    return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  // Is LoggedIn
-  if (authPaths.some((path) => pathname.startsWith(path)) && sessionToken) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+  // If user is logged in and tries to access login or register page
+  if (token && (currentPath === '/login' || currentPath === '/register')) {
+    // Redirect to dashboard
+    return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
-  return NextResponse.next();
+  // Allow access if there are no issues
+  return NextResponse.next()
 }
 
-// See "Matching Paths" below to learn more
+// Specify which routes the middleware should be applied to
 export const config = {
-  matcher: ["/me", "/dashboard", "/login", "/register"],
-};
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)']
+}
