@@ -1,31 +1,16 @@
-import envConfig from '@/config/env.config'
-import { sendRequest } from '@/utils/api'
+import userService from '@/services/user-service'
 import { cookies } from 'next/headers'
 
 export default async function DashboardPage() {
   const cookieStore = cookies()
   // cookies on nextjs server
   const accessToken = cookieStore.get('accessToken')
-
-  interface Response {
-    data: { id: number; name: string; email: string }
-    message: string
-  }
-
-  const user = await sendRequest<Response>({
-    url: `${envConfig.NEXT_PUBLIC_API_ENDPOINT}/user/me`,
-    method: 'GET',
-    headers: {
-      // 'Authorization': `Bearer ${accessToken?.value}`,
-      //For Server Cookie Mode
-      Cookie: `accessToken=${accessToken?.value}`
-    }
-  })
+  const user = await userService.getUser(accessToken?.value)
 
   return (
     <main className='min-h-screen p-10'>
       <p>
-        Hello: <span className='font-bold'>{user.data.email}</span>
+        Hello: <span className='font-bold'>{user?.data?.email.split('@')[0]}</span>
       </p>
       <h1>Dashboard Page</h1>
     </main>

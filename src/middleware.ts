@@ -2,12 +2,9 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
-  
-  
   // Get current path
   const { pathname: currentPath } = request.nextUrl
-  console.log('pathname::', currentPath);
-
+  
   // Get token from cookie or header
   const token = request.cookies.get('accessToken')?.value || request.headers.get('Authorization')?.split(' ')[1]
 

@@ -37,23 +37,20 @@ export default function LoginForm() {
   const loginMutation = useMutation({
     mutationFn: (data: LoginDataType) => authService.login(data),
     onSuccess: (data) => {
-      console.log(data.message)
-
       router.push('dashboard')
       toast({
+        variant: 'default',
         description: data.message
       })
     },
     onError: (error: any) => {
-      console.log(error)
-      const status = error.status as number
-
+      const status = error.status
       if (status === 401) {
         setError(error.payload.message)
       } else {
         toast({
           variant: 'destructive',
-          title: 'Lỗi',
+          title: 'Error',
           description: error.payload.message
         })
       }
