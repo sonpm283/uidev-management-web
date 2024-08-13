@@ -4,7 +4,7 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
   // Get current path
   const { pathname: currentPath } = request.nextUrl
-  
+
   // Get token from cookie or header
   const token = request.cookies.get('accessToken')?.value || request.headers.get('Authorization')?.split(' ')[1]
 
@@ -13,7 +13,8 @@ export function middleware(request: NextRequest) {
 
   // Check if the current path requires authentication
   const isAuthRoute = authRoutes.some((route) => currentPath.startsWith(route))
-
+  // const isAuthRoute = authRoutes.some((route) => currentPath === route || currentPath.startsWith(route))
+  
   // If it's an auth route and there's no token
   if (isAuthRoute && !token) {
     // Redirect to login page

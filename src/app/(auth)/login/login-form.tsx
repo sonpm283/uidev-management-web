@@ -37,7 +37,7 @@ export default function LoginForm() {
   const loginMutation = useMutation({
     mutationFn: (data: LoginDataType) => authService.login(data),
     onSuccess: (data) => {
-      router.push('dashboard')
+      router.push('/')
       toast({
         variant: 'default',
         description: data.message
