@@ -6,6 +6,7 @@ import Footer from '@/components/footer/footer'
 import { AppProvider } from './AppProvider'
 import { cookies } from 'next/headers'
 import { Toaster } from '@/components/ui/toaster'
+import TanstackProvider from './tanstack-provider'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -19,17 +20,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const cookieStore = cookies()
-  const sessionToken = cookieStore.get('sessionToken')
-
   return (
     <html lang='en'>
       <body className={inter.className}>
-        <AppProvider initialSessionToken={sessionToken?.value}>
-          <Header />
-          {children}
-          <Footer />
-        </AppProvider>
+        <Header />
+        <TanstackProvider>{children}</TanstackProvider>
+        <Footer />
         <Toaster />
       </body>
     </html>

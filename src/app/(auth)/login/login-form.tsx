@@ -6,18 +6,16 @@ import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { LoginBody, LoginDataType } from '@/schemaValidations/auth.schema'
 import { useToast } from '@/components/ui/use-toast'
-import { useEffect, useState } from 'react'
-import { useAppContext } from '@/app/AppProvider'
-import { useRouter } from 'next/navigation'
+import { LoginBody, LoginDataType } from '@/schemaValidations/auth.schema'
 import authService from '@/services/auth-service'
+import { useMutation } from '@tanstack/react-query'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 export default function LoginForm() {
   const [error, setError] = useState<string>('')
   const { toast } = useToast()
-  // const { setSessionToken } = useAppContext()
-
   const router = useRouter()
 
   const form = useForm<LoginDataType>({
@@ -36,48 +34,21 @@ export default function LoginForm() {
     return () => subscription.unsubscribe()
   }, [form])
 
-  async function onSubmit(formData: LoginDataType) {
-    try {
-      const result = await authService.login(formData)
+  const loginMutation = useMutation({
+    mutationFn: (data: LoginDataType) => authService.login(data),
+    onSuccess: (data) => {
+      console.log(data.message)
 
-      //navigate to dashboard
       router.push('dashboard')
-
       toast({
-        description: result.message
+        description: data.message
       })
-
-      // set Cookie for NextJS server in other cases domain
-      // const resultFromNextServer = await fetch("/api/auth", {
-      //   method: "POST",
-      //   body: JSON.stringify(result),
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      // }).then(async (res) => {
-      //   const payload = await res.json();
-
-      //   const data = {
-      //     status: res.status,
-      //     payload,
-      //   };
-
-      //   if (!res.ok) {
-      //     throw data;
-      //   }
-
-      //   return data;
-      // });
-
-      // setSessionToken(resultFromNextServer.payload.data.token);
-
-      // setSessionToken(result.payload.data.token);
-    } catch (error: any) {
+    },
+    onError: (error: any) => {
+      console.log(error)
       const status = error.status as number
 
       if (status === 401) {
-        console.log(error)
-
         setError(error.payload.message)
       } else {
         toast({
@@ -87,6 +58,10 @@ export default function LoginForm() {
         })
       }
     }
+  })
+
+  function onSubmit(formData: LoginDataType) {
+    loginMutation.mutate(formData)
   }
 
   return (
