@@ -23,7 +23,7 @@ async function Header() {
     { href: '/', label: 'Dashboard' },
     { href: '/teams', label: 'Team' },
     { href: '/projects', label: 'Projects' },
-    { href: '/calendar', label: 'Calendar' }
+    { href: '/calendar', label: 'Calendar' },
   ]
 
   const authItems = [{ href: '/login', label: 'Login' }]
@@ -49,7 +49,7 @@ async function Header() {
           <div className='flex items-center gap-2'>
             <Image className='ml-auto cursor-pointer' src={NotificationIcon} alt='Logo' width={32} height={32} />
             <DropdownMenuNavigation>
-              <div className='uppercase cursor-pointer font-bold size-9 grid items-center rounded-full border-2'>
+              <div className='uppercase cursor-pointer font-bold size-9 grid items-center rounded-full border-2 flex-shrink-0'>
                 {user.email.split('@')[0][0]}
               </div>
             </DropdownMenuNavigation>

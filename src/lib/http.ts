@@ -1,5 +1,4 @@
 import envConfig from '@/config/env.config'
-import path from 'path'
 
 class HttpError extends Error {
   status: number

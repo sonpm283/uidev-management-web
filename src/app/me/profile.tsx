@@ -1,26 +1,17 @@
 'use client'
 
-import userService from '@/services/user-service'
-import { useQuery } from '@tanstack/react-query'
+import { useUserProfile } from '@/hooks'
 
 export default function Profile() {
-  const {
-    data: userData,
-    isLoading,
-    error
-  } = useQuery({
-    queryKey: ['user'],
-    queryFn: () => userService.getUser(),
-    refetchOnWindowFocus: true,
-  })
+  const { data: userProfile, isLoading, error } = useUserProfile()
 
   if (isLoading) return <p>Loading...</p>
   if (error) return <p>Error: {error.message}</p>
 
   return (
     <div className='p-3 border'>
-      <p>Name: {userData?.data?.email.split('@')[0]}</p>
-      <p>Email: {userData?.data?.email}</p>
+      <p>Name: {userProfile?.data?.email.split('@')[0]}</p>
+      <p>Email: {userProfile?.data?.email}</p>
     </div>
   )
 }

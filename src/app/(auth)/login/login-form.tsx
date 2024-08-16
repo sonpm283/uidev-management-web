@@ -7,11 +7,11 @@ import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
-import { LoginBody, LoginDataType } from '@/schemaValidations/auth.schema'
 import authService from '@/services/auth-service'
 import { useMutation } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { LoginBody, LoginDataType } from '@/schema-validations/auth.schema'
 
 export default function LoginForm() {
   const [error, setError] = useState<string>('')
@@ -42,6 +42,7 @@ export default function LoginForm() {
         variant: 'default',
         description: data.message
       })
+      router.refresh()
     },
     onError: (error: any) => {
       const status = error.status

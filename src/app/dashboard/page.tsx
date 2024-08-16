@@ -1,4 +1,5 @@
 import userService from '@/services/user-service'
+import { Sidebar } from 'lucide-react'
 import { cookies } from 'next/headers'
 
 export default async function DashboardPage() {

@@ -1,5 +1,5 @@
 import http from '@/lib/http'
-import { LoginDataType, LoginResType } from '@/schemaValidations/auth.schema'
+import { LoginDataType, LoginResType } from '@/schema-validations/auth.schema'
 
 const authService = {
   login: async (body: LoginDataType) => {
